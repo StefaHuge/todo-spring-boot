@@ -7,6 +7,7 @@ import com.example.todospring.service.TaskService;
 import com.example.todospring.service.TaskService.TaskStatistics;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -38,13 +39,19 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskResponseDTO>> getAllTasks() {
-        List<TaskResponseDTO> tasks = taskService.getAllTasks();
-        return ResponseEntity.ok(tasks);
+    public ResponseEntity<Page<TaskResponseDTO>> getAllTasks(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "createdAt") String sortBy,
+        @RequestParam(defaultValue = "desc") String direction) {
+
+        return ResponseEntity.ok(taskService.getAllTasks(page, size,
+                sortBy, direction));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TaskResponseDTO> getTaskById(@PathVariable Long id) {
+    public ResponseEntity<TaskResponseDTO> getTaskById(
+            @PathVariable Long id) {
         TaskResponseDTO task = taskService.getTaskById(id);
         return ResponseEntity.ok(task);
     }
@@ -66,7 +73,8 @@ public class TaskController {
     @GetMapping("/filter")
     public ResponseEntity<List<TaskResponseDTO>> getTasksByPriority(
             @RequestParam Priority priority) {
-        List<TaskResponseDTO> tasks = taskService.getTasksByPriority(priority);
+        List<TaskResponseDTO> tasks = taskService
+                .getTasksByPriority(priority);
 
         return ResponseEntity.ok(tasks);
     }

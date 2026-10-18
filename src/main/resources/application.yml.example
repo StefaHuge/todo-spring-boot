@@ -23,7 +23,7 @@ server:
 
 logging:
   level:
-    com.example.todospring: DEBUG
+    com.example.todo-spring: DEBUG
     org.hibernate.sql: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
   file:

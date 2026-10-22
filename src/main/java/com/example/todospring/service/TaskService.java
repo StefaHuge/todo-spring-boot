@@ -48,7 +48,7 @@ public class TaskService {
         log.info("Создание новой задачи: {}", request.getDescription());
         Task task = new Task();
         task.setDescription(request.getDescription());
-        task.setCompleted(request.isCompleted());
+        task.setCompleted(request.getIsCompleted() != null ? request.getIsCompleted() : false);
         task.setPriority(request.getPriority());
 
         Task savedTask = taskRepository.save(task);
@@ -96,7 +96,7 @@ public class TaskService {
                 + id + " не найдена"));
 
         task.setDescription(request.getDescription());
-        task.setCompleted(request.isCompleted());
+        task.setCompleted(request.getIsCompleted());
         task.setPriority(request.getPriority());
 
         Task updatedTask = taskRepository.save(task);

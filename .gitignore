@@ -69,6 +69,7 @@ application.properties
 application-*.yml
 application-*.properties
 !application.yml.example
+!application.properties.example
 
 *.pem
 *.key

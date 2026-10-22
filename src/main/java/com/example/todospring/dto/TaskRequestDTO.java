@@ -1,6 +1,7 @@
 package com.example.todospring.dto;
 
 import com.example.todospring.model.Task.Priority;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,8 @@ public class TaskRequestDTO {
     @NotBlank(message = "Описание задачи обязательно")
     private String description;
 
-    private boolean isCompleted = false;
+    @JsonProperty("completed")
+    private Boolean isCompleted = false;
 
     @NotNull(message = "Приоритет обязателен")
     private Priority priority = Priority.MEDIUM;

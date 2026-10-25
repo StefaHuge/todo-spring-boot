@@ -170,7 +170,7 @@ public class TaskServiceTest {
         taskService.deleteTask(taskId, userId);
 
         verify(taskRepository, times(1))
-                .deleteById(taskId);
+                .deleteByIdAndUserId(taskId, userId);
     }
     @Test
     void shouldThrowExceptionWhenDeletingNonexistentTask() {
@@ -184,6 +184,6 @@ public class TaskServiceTest {
                 .isInstanceOf(TaskNotFoundException.class)
                 .hasMessageContaining("99");
 
-        verify(taskRepository, never()).deleteById(taskId);
+        verify(taskRepository, never()).deleteByIdAndUserId(taskId, userId);
     }
 }

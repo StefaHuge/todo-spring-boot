@@ -3,7 +3,9 @@ package com.example.todospring.service;
 import com.example.todospring.dto.TaskRequestDTO;
 import com.example.todospring.dto.TaskResponseDTO;
 import com.example.todospring.model.Task;
+import com.example.todospring.model.User;
 import com.example.todospring.repository.TaskRepository;
+import com.example.todospring.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +17,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,11 +29,20 @@ public class TaskServiceTest {
     @Mock
     private TaskRepository taskRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private TaskService taskService;
 
     @Test
     void shouldCreateTask() {
+
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
         TaskRequestDTO request = new TaskRequestDTO();
         request.setDescription("Купить хлеб");
         request.setPriority(Task.Priority.HIGH);
@@ -42,9 +54,10 @@ public class TaskServiceTest {
         savedTask.setDescription("Купить хлеб");
         savedTask.setPriority(Task.Priority.HIGH);
         savedTask.setCompleted(false);
+        savedTask.setUser(user);
         when(taskRepository.save(any(Task.class))).thenReturn(savedTask);
 
-        TaskResponseDTO result = taskService.createTask(request);
+        TaskResponseDTO result = taskService.createTask(request, userId);
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
@@ -52,19 +65,29 @@ public class TaskServiceTest {
         assertThat(result.getPriority()).isEqualTo(Task.Priority.HIGH);
         assertThat(result.isCompleted()).isFalse();
 
-        verify(taskRepository, times(1)).save(any(Task.class));
+        verify(taskRepository).save(argThat(task ->
+                task.getUser() != null && task.getUser().getId()
+                        .equals(userId)));
     }
 
     @Test
     void shouldReturnTaskWhenExists() {
+
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+
         Task task = new Task();
         task.setId(1L);
         task.setDescription("Купить хлеб");
         task.setPriority(Task.Priority.HIGH);
         task.setCompleted(false);
-        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+        task.setUser(user);
 
-        TaskResponseDTO result = taskService.getTaskById(1L);
+        when(taskRepository.findByIdAndUserId(1L, userId))
+                .thenReturn(Optional.of(task));
+
+        TaskResponseDTO result = taskService.getTaskById(1L, userId);
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
@@ -73,9 +96,9 @@ public class TaskServiceTest {
 
     @Test
     void shouldThrowExceptionWhenTaskNotFound() {
-        when(taskRepository.findById(99L)).thenReturn(Optional.empty());
+        when(taskRepository.findByIdAndUserId(99L, 99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> taskService.getTaskById(99L))
+        assertThatThrownBy(() -> taskService.getTaskById(99L, 99L))
                 .isInstanceOf(TaskNotFoundException.class)
                 .hasMessageContaining("99");
     }
@@ -83,13 +106,19 @@ public class TaskServiceTest {
     @Test
     void shouldUpdateTaskWhenExists() {
         Long taskId = 1L;
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+
         Task existingTask = new Task();
         existingTask.setId(taskId);
+        existingTask.setUser(user);
         existingTask.setDescription("Старое описание");
         existingTask.setPriority(Task.Priority.LOW);
         existingTask.setCompleted(false);
 
-        when(taskRepository.findById(taskId)).thenReturn(Optional.of(existingTask));
+        when(taskRepository.findByIdAndUserId(taskId, userId))
+                .thenReturn(Optional.of(existingTask));
 
         TaskRequestDTO request = new TaskRequestDTO();
         request.setDescription("Новое описание");
@@ -98,7 +127,8 @@ public class TaskServiceTest {
 
         when(taskRepository.save(any(Task.class))).thenReturn(existingTask);
 
-        TaskResponseDTO result = taskService.updateTask(taskId, request);
+        TaskResponseDTO result = taskService.updateTask(taskId,
+                request, userId);
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(taskId);
@@ -110,16 +140,19 @@ public class TaskServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenUpdatingNonexistentTask() {
+    void shouldThrowExceptionWhenUpdatingNonExistentTask() {
         Long taskId = 99L;
-        when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
+        Long userId = 1L;
+        when(taskRepository.findByIdAndUserId(taskId, userId))
+                .thenReturn(Optional.empty());
 
         TaskRequestDTO request = new TaskRequestDTO();
         request.setDescription("Новое описание");
         request.setPriority(Task.Priority.HIGH);
         request.setIsCompleted(true);
 
-        assertThatThrownBy(() -> taskService.updateTask(taskId, request))
+        assertThatThrownBy(() -> taskService.updateTask(taskId, request,
+                userId))
                 .isInstanceOf(TaskNotFoundException.class)
                 .hasMessageContaining("99");
 
@@ -129,18 +162,25 @@ public class TaskServiceTest {
     @Test
     void shouldDeleteTaskWhenExists() {
         Long taskId = 1L;
-        when(taskRepository.existsById(taskId)).thenReturn(true);
+        Long userId = 1L;
 
-        taskService.deleteTask(taskId);
+        when(taskRepository.existsByIdAndUserId(taskId, userId))
+                .thenReturn(true);
 
-        verify(taskRepository, times(1)).deleteById(taskId);
+        taskService.deleteTask(taskId, userId);
+
+        verify(taskRepository, times(1))
+                .deleteById(taskId);
     }
     @Test
     void shouldThrowExceptionWhenDeletingNonexistentTask() {
         Long taskId = 99L;
-        when(taskRepository.existsById(taskId)).thenReturn(false);
+        Long userId = 1L;
 
-        assertThatThrownBy(() -> taskService.deleteTask(taskId))
+        when(taskRepository.existsByIdAndUserId(taskId, userId))
+                .thenReturn(false);
+
+        assertThatThrownBy(() -> taskService.deleteTask(taskId, userId))
                 .isInstanceOf(TaskNotFoundException.class)
                 .hasMessageContaining("99");
 

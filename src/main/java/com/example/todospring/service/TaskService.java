@@ -4,7 +4,9 @@ import com.example.todospring.dto.TaskRequestDTO;
 import com.example.todospring.dto.TaskResponseDTO;
 import com.example.todospring.model.Task;
 import com.example.todospring.model.Task.Priority;
+import com.example.todospring.model.User;
 import com.example.todospring.repository.TaskRepository;
+import com.example.todospring.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
     private static final Set<String> ALLOWED_SORT_FIELDS = Set.of(
           "createdAt", "updatedAt", "description", "priority", "id");
@@ -43,13 +46,19 @@ public class TaskService {
                 .build();
     }
 
-    public TaskResponseDTO createTask(TaskRequestDTO request) {
+    public TaskResponseDTO createTask(TaskRequestDTO request, Long userId) {
 
         log.info("Создание новой задачи: {}", request.getDescription());
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException(
+                        "Пользователь не найден"));
         Task task = new Task();
         task.setDescription(request.getDescription());
-        task.setCompleted(request.getIsCompleted() != null ? request.getIsCompleted() : false);
+        task.setCompleted(request.getIsCompleted() != null ? request
+                .getIsCompleted() : false);
         task.setPriority(request.getPriority());
+        task.setUser(user);
 
         Task savedTask = taskRepository.save(task);
         log.debug("Задача создана с ID: {}", savedTask.getId());
@@ -57,8 +66,8 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TaskResponseDTO> getAllTasks(int page, int size, String
-            sortBy, String direction) {
+    public Page<TaskResponseDTO> getAllTasks(Long userId, int page, int size,
+                                             String sortBy, String direction) {
 
         if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
             throw new IllegalArgumentException(
@@ -77,21 +86,21 @@ public class TaskService {
         Sort sort = Sort.by(dir, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return taskRepository.findAll(pageable)
+        return taskRepository.findByUserId(userId, pageable)
                 .map(this::mapToDTO);
     }
 
     @Cacheable(value = "tasks", key = "#id")
-    public TaskResponseDTO getTaskById(Long id) {
-        Task task = taskRepository.findById(id)
+    public TaskResponseDTO getTaskById(Long id, Long userId) {
+        Task task = taskRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new TaskNotFoundException("Задача с ID "
                 + id + " не найдена"));
         return mapToDTO(task);
     }
 
     @CachePut(value = "tasks", key = "#id")
-    public TaskResponseDTO updateTask(Long id, TaskRequestDTO request) {
-        Task task = taskRepository.findById(id)
+    public TaskResponseDTO updateTask(Long id, TaskRequestDTO request, Long userId) {
+        Task task = taskRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new TaskNotFoundException("Задача с ID "
                 + id + " не найдена"));
 
@@ -104,13 +113,13 @@ public class TaskService {
     }
 
     @CacheEvict(value = "tasks", key = "#id")
-    public void deleteTask(Long id) {
+    public void deleteTask(Long id, Long userId) {
         log.warn("Удаление задачи с ID: {}", id);
-        if (!taskRepository.existsById(id)) {
+        if (!taskRepository.existsByIdAndUserId(id, userId)) {
             throw new TaskNotFoundException("Задача с ID " + id
                     + " не найдена");
         }
-        taskRepository.deleteById(id);
+        taskRepository.deleteByIdAndUserId(id, userId);
     }
 
     @Transactional(readOnly = true)

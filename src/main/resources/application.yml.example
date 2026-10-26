@@ -2,7 +2,7 @@ spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/todo_db}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_USERNAME:ваш_пароль_сюда}
+    password: ${SPRING_DATASOURCE_PASSWORD:ваш_пароль_сюда}
     hikari:
       connection-timeout: 20000
       maximum-pool-size: 5
@@ -19,7 +19,7 @@ spring:
     locations: classpath:db/migration
 
 server:
-  port: ${PORT:8081}
+  port: ${PORT:8080}
 
 logging:
   level:

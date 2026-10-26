@@ -19,7 +19,7 @@ spring:
     locations: classpath:db/migration
 
 server:
-  port: 8081
+  port: ${PORT:8081}
 
 logging:
   level:

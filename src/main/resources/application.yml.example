@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/todo_db
-    username: postgres
-    password: ваш_пароль_сюда
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/todo_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_USERNAME:ваш_пароль_сюда}
     hikari:
       connection-timeout: 20000
       maximum-pool-size: 5

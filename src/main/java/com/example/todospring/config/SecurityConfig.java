@@ -1,6 +1,7 @@
 package com.example.todospring.config;
 
 import com.example.todospring.security.JwtAuthFilter;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,12 +24,12 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource)
+    public SecurityFilterChain filterChain(HttpSecurity http)
             throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(
                         auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
@@ -59,5 +60,10 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @PostConstruct
+    public void init() {
+        System.out.println("✅✅✅ SecurityConfig ЗАГРУЖЕН ✅✅✅");
     }
 }

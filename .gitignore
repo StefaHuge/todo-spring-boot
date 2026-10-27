@@ -70,6 +70,7 @@ application-*.yml
 application-*.properties
 !application.yml.example
 !application.properties.example
+!application-render.yml
 
 *.pem
 *.key

@@ -2,10 +2,10 @@ package com.example.todospring;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 
-@SpringBootApplication(exclude = {org.springframework.boot.security
-        .autoconfigure.UserDetailsServiceAutoConfiguration.class})
+@SpringBootApplication(exclude = {UserDetailsServiceAutoConfiguration.class})
 @EnableCaching
 public class TodoSpringApplication {
 

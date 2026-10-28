@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -35,8 +34,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/swagger-ui.html").permitAll()
-                                .requestMatchers("/v3/api-docs/**")
-                                .permitAll()
+                                .requestMatchers("/v3/api-docs").permitAll()
+                                .requestMatchers("/v3/api-docs/**").permitAll()
                                 .requestMatchers("/v3/api-docs/swagger-config").permitAll()
                                 .requestMatchers("/webjars/**").permitAll()
                                 .anyRequest().authenticated()
@@ -45,8 +44,9 @@ public class SecurityConfig {
                         session
                                 -> session.sessionCreationPolicy(
                                         SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+//                .addFilterBefore(jwtAuthFilter,
+//                        UsernamePasswordAuthenticationFilter.class)
+        ;
         return http.build();
     }
 

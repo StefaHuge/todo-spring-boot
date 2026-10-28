@@ -80,14 +80,14 @@ Web Service: https://todo-spring-boot-m3g2.onrender.com
 ## 📁 Структура проекта
 
 src/main/java/com/example/todospring/
-─ config/# SecurityConfig, SecurityBeans, DataInitializer
-─ controller/# AuthController, TaskController
-─ dto/# TaskRequestDTO, TaskResponseDTO, AuthRequest
-─ exception/# GlobalExceptionHandler, ErrorResponse
-─ model/# Task, User
-─ repository/# TaskRepository, UserRepository
-─ security/# JwtService, JwtAuthFilter
-─ service/# TaskService, UserService
+- config/# SecurityConfig, SecurityBeans, DataInitializer
+- controller/# AuthController, TaskController
+- dto/# TaskRequestDTO, TaskResponseDTO, AuthRequest
+- exception/# GlobalExceptionHandler, ErrorResponse
+- model/# Task, User
+- repository/# TaskRepository, UserRepository
+- security/# JwtService, JwtAuthFilter
+- service/# TaskService, UserService
 
 ## 📄 Лицензия
 

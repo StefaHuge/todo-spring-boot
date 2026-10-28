@@ -38,9 +38,10 @@ https://todo-spring-boot-m3g2.onrender.com/swagger-ui.html
    cd todo-spring-boot
    
 3. Запустите:
+   ```bash
    docker compose up --build
    
-4. Откройте Swagger UI:
+5. Откройте Swagger UI:
    http://localhost:8081/swagger-ui.html
 
 ### Вариант 2: Локально с PostgreSQL
@@ -48,8 +49,9 @@ https://todo-spring-boot-m3g2.onrender.com/swagger-ui.html
 1. Создайте базу данных todo_db в PostgreSQL.
 2. Скопируйте application.yml.example в application.yml и заполните пароль.
 3. Запустите:
+   ```bash
    mvn spring-boot:run
-
+   
 ## 🧪Тесты
 
 Проект покрыт тестами трёх уровней:
@@ -58,8 +60,10 @@ https://todo-spring-boot-m3g2.onrender.com/swagger-ui.html
 - Интеграционные тесты (TaskIntegrationTest) — @SpringBootTest + Testcontainers (реальный PostgreSQL в Docker), проверка полного пути запроса.
 
 Запуск всех тестов:
-mvn clean verify
-
+  ```bash
+  mvn clean verify
+  ```
+  
 ## ⚙️ CI/CD
 
 Настроен GitHub Actions (.github/workflows/ci.yml):

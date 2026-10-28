@@ -1,8 +1,10 @@
 package com.example.todospring.controller;
 
+import com.example.todospring.dto.AuthRequest;
 import com.example.todospring.model.User;
 import com.example.todospring.security.JwtService;
 import com.example.todospring.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,10 +24,10 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> register(
-            @RequestBody Map<String, String> request) {
+            @Valid @RequestBody AuthRequest request) {
 
-        String email = request.get("email");
-        String password = request.get("password");
+        String email = request.getEmail();
+        String password = request.getPassword();
 
         try {
             User user = userService.registerUser(email, password);
@@ -43,10 +45,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(
-            @RequestBody Map<String, String> request) {
+            @Valid@RequestBody AuthRequest request) {
 
-        String email = request.get("email");
-        String password = request.get("password");
+        String email = request.getEmail();
+        String password = request.getPassword();
 
         try {
             User user = userService.authenticateUser(email, password);

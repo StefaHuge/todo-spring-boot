@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 public class TaskResponseDTO {
 
     private Long id;
+    private Long userTaskNumber;
+
     private String description;
     private boolean isCompleted;
     private Priority priority;

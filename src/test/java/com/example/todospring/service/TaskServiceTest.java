@@ -43,6 +43,9 @@ public class TaskServiceTest {
         user.setId(userId);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
+        when(taskRepository.findMaxUserTaskNumberByUserId(userId))
+                .thenReturn(null);
+
         TaskRequestDTO request = new TaskRequestDTO();
         request.setDescription("Купить хлеб");
         request.setPriority(Task.Priority.HIGH);
@@ -51,6 +54,7 @@ public class TaskServiceTest {
 
         Task savedTask = new Task();
         savedTask.setId(1L);
+        savedTask.setUserTaskNumber(1L);
         savedTask.setDescription("Купить хлеб");
         savedTask.setPriority(Task.Priority.HIGH);
         savedTask.setCompleted(false);
@@ -61,13 +65,46 @@ public class TaskServiceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getUserTaskNumber()).isEqualTo(1L);
         assertThat(result.getDescription()).isEqualTo("Купить хлеб");
         assertThat(result.getPriority()).isEqualTo(Task.Priority.HIGH);
         assertThat(result.isCompleted()).isFalse();
 
         verify(taskRepository).save(argThat(task ->
                 task.getUser() != null && task.getUser().getId()
-                        .equals(userId)));
+                        .equals(userId) && task.getUserTaskNumber()
+                        .equals(1L)));
+    }
+
+    @Test
+    void shouldIncrementUserTaskNumber() {
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        when(taskRepository.findMaxUserTaskNumberByUserId(userId))
+                .thenReturn(3L);
+
+        TaskRequestDTO request = new TaskRequestDTO();
+        request.setDescription("Новая задача");
+        request.setPriority(Task.Priority.MEDIUM);
+        request.setIsCompleted(false);
+
+        Task savedTask = new Task();
+        savedTask.setId(4L);
+        savedTask.setUserTaskNumber(4L);
+        savedTask.setDescription("Новая задача");
+        savedTask.setPriority(Task.Priority.MEDIUM);
+        savedTask.setCompleted(false);
+        savedTask.setUser(user);
+        when(taskRepository.save(any(Task.class))).thenReturn(savedTask);
+
+        TaskResponseDTO result = taskService.createTask(request, userId);
+        assertThat(result.getUserTaskNumber()).isEqualTo(4L);
+
+        verify(taskRepository).save(argThat(task -> task
+                .getUserTaskNumber().equals(4L)));
     }
 
     @Test

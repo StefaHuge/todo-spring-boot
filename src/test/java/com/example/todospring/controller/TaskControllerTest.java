@@ -79,6 +79,7 @@ public class TaskControllerTest {
 
         TaskResponseDTO response = TaskResponseDTO.builder()
                 .id(1L)
+                .userTaskNumber(1L)
                 .description("Купить хлеб")
                 .priority(Task.Priority.HIGH)
                 .isCompleted(false)
@@ -92,6 +93,8 @@ public class TaskControllerTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.userTaskNumber")
+                        .value(1L))
                 .andExpect(jsonPath("$.description")
                         .value("Купить хлеб"))
                 .andExpect(jsonPath("$.priority")

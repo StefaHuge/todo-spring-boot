@@ -39,6 +39,9 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_task_number", nullable = false)
+    private Long userTaskNumber;
+
     @NotBlank(message = "Описание задачи не может быть пустым")
     @Column(nullable = false)
     private String description;

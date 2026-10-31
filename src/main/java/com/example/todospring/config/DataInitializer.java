@@ -36,18 +36,21 @@ public class DataInitializer implements CommandLineRunner {
             task1.setPriority(Priority.HIGH);
             task1.setCompleted(false);
             task1.setUser(user);
+            task1.setUserTaskNumber(1L);
 
             Task task2 = new Task();
             task2.setDescription("Сделать пет-проект");
             task2.setPriority(Priority.HIGH);
             task2.setCompleted(false);
             task2.setUser(user);
+            task2.setUserTaskNumber(2L);
 
             Task task3 = new Task();
             task3.setDescription("Прочитать документацию");
             task3.setPriority(Priority.MEDIUM);
             task3.setCompleted(true);
             task3.setUser(user);
+            task3.setUserTaskNumber(3L);
 
             taskRepository.save(task1);
             taskRepository.save(task2);

@@ -38,6 +38,7 @@ public class TaskService {
     private TaskResponseDTO mapToDTO(Task task) {
         return TaskResponseDTO.builder()
                 .id(task.getId())
+                .userTaskNumber(task.getUserTaskNumber())
                 .description(task.getDescription())
                 .isCompleted(task.isCompleted())
                 .priority(task.getPriority())
@@ -53,12 +54,17 @@ public class TaskService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException(
                         "Пользователь не найден"));
+
+        Long maxNumber = taskRepository.findMaxUserTaskNumberByUserId(userId);
+        Long nextNumber = (maxNumber != null ? maxNumber : 0) + 1;
+
         Task task = new Task();
         task.setDescription(request.getDescription());
         task.setCompleted(request.getIsCompleted() != null ? request
                 .getIsCompleted() : false);
         task.setPriority(request.getPriority());
         task.setUser(user);
+        task.setUserTaskNumber(nextNumber);
 
         Task savedTask = taskRepository.save(task);
         log.debug("Задача создана с ID: {}", savedTask.getId());

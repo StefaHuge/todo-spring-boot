@@ -62,7 +62,9 @@ public class TaskIntegrationTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.description").value(
-                        "Интеграционная задача"));
+                        "Интеграционная задача"))
+                .andExpect(jsonPath("$.userTaskNumber").value(
+                        4L));
 
         var tasks = taskRepository.findAll();
         assertThat(tasks).anyMatch(t -> t.getDescription()

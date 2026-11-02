@@ -2,7 +2,7 @@
 
 REST API для управления задачами с JWT-аутентификацией, разграничением прав и полным циклом CI/CD.
 
-https://todo-frontend-nine-beta.vercel.app фронтенд на Vercel,
+https://todo-frontend-nine-beta.vercel.app фронтенд на Vercel
 
 https://todo-spring-boot-m3g2.onrender.com/swagger-ui.html
 *Бесплатный тариф Render «засыпает» после 15 минут бездействия. Первый запрос может занять 20–30 секунд.*

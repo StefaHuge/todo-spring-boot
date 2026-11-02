@@ -68,7 +68,7 @@ public class TaskServiceTest {
         assertThat(result.getUserTaskNumber()).isEqualTo(1L);
         assertThat(result.getDescription()).isEqualTo("Купить хлеб");
         assertThat(result.getPriority()).isEqualTo(Task.Priority.HIGH);
-        assertThat(result.isCompleted()).isFalse();
+        assertThat(result.getIsCompleted()).isFalse();
 
         verify(taskRepository).save(argThat(task ->
                 task.getUser() != null && task.getUser().getId()
@@ -171,7 +171,7 @@ public class TaskServiceTest {
         assertThat(result.getId()).isEqualTo(taskId);
         assertThat(result.getDescription()).isEqualTo("Новое описание");
         assertThat(result.getPriority()).isEqualTo(Task.Priority.HIGH);
-        assertThat(result.isCompleted()).isTrue();
+        assertThat(result.getIsCompleted()).isTrue();
 
         verify(taskRepository, times(1)).save(any(Task.class));
     }

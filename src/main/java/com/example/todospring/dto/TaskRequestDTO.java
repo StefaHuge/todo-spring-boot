@@ -16,7 +16,7 @@ public class TaskRequestDTO {
     @NotBlank(message = "Описание задачи обязательно")
     private String description;
 
-    @JsonProperty("completed")
+    @JsonProperty("isCompleted")
     private Boolean isCompleted = false;
 
     @NotNull(message = "Приоритет обязателен")

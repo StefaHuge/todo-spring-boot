@@ -9,7 +9,6 @@ import com.example.todospring.repository.TaskRepository;
 import com.example.todospring.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -118,14 +117,22 @@ public class TaskService {
         return mapToDTO(updatedTask);
     }
 
-    @CacheEvict(value = "tasks", key = "#id")
+    @Transactional
     public void deleteTask(Long id, Long userId) {
         log.warn("Удаление задачи с ID: {}", id);
-        if (!taskRepository.existsByIdAndUserId(id, userId)) {
-            throw new TaskNotFoundException("Задача с ID " + id
-                    + " не найдена");
+        Task task = taskRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new TaskNotFoundException("Задача с ID " +
+                        id + " не найдена"));
+
+        taskRepository.delete(task);
+
+        List<Task> remainingTasks = taskRepository
+                .findAllByUserIdOrderByUserTaskNumber(userId);
+        long counter = 1;
+        for (Task t : remainingTasks) {
+            t.setUserTaskNumber(counter++);
         }
-        taskRepository.deleteByIdAndUserId(id, userId);
+        taskRepository.saveAll(remainingTasks);
     }
 
     @Transactional(readOnly = true)

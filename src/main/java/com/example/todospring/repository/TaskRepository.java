@@ -37,5 +37,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("SELECT MAX(t.userTaskNumber) FROM Task t WHERE t.user.id = :userId")
     Long findMaxUserTaskNumberByUserId(@Param("userId") Long userId);
 
+    @Query("SELECT t FROM Task t WHERE t.user.id = :userId ORDER BY " +
+            "t.userTaskNumber ASC")
+    List<Task> findAllByUserIdOrderByUserTaskNumber(Long userId);
+
     Page<Task> findAll(Pageable pageable);
 }

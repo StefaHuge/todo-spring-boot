@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -201,26 +202,42 @@ public class TaskServiceTest {
         Long taskId = 1L;
         Long userId = 1L;
 
-        when(taskRepository.existsByIdAndUserId(taskId, userId))
-                .thenReturn(true);
+        Task taskToDelete = new Task();
+        taskToDelete.setId(taskId);
+        taskToDelete.setUserTaskNumber(1L);
+
+        Task remainingTask = new Task();
+        remainingTask.setId(2L);
+        remainingTask.setUserTaskNumber(2L);
+
+        when(taskRepository.findByIdAndUserId(taskId, userId))
+                .thenReturn(Optional.of(taskToDelete));
+
+        when(taskRepository.findAllByUserIdOrderByUserTaskNumber(userId))
+                .thenReturn(List.of(remainingTask));
 
         taskService.deleteTask(taskId, userId);
 
-        verify(taskRepository, times(1))
-                .deleteByIdAndUserId(taskId, userId);
+        verify(taskRepository).delete(taskToDelete);
+        verify(taskRepository).saveAll(argThat(tasks -> {
+            List<Task> list = (List<Task>) tasks;
+            return list.size() == 1 && list.get(0).getUserTaskNumber()
+                    .equals(1L);
+        }));
     }
     @Test
     void shouldThrowExceptionWhenDeletingNonexistentTask() {
         Long taskId = 99L;
         Long userId = 1L;
 
-        when(taskRepository.existsByIdAndUserId(taskId, userId))
-                .thenReturn(false);
+        when(taskRepository.findByIdAndUserId(taskId, userId))
+                .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> taskService.deleteTask(taskId, userId))
                 .isInstanceOf(TaskNotFoundException.class)
                 .hasMessageContaining("99");
 
-        verify(taskRepository, never()).deleteByIdAndUserId(taskId, userId);
+        verify(taskRepository, never()).delete(any());
+        verify(taskRepository, never()).saveAll(any());
     }
 }

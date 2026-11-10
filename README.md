@@ -2,10 +2,12 @@
 
 REST API для управления задачами с JWT-аутентификацией, разграничением прав и полным циклом CI/CD.
 
-https://todo-frontend-nine-beta.vercel.app фронтенд на Vercel
-
-https://todo-spring-boot-m3g2.onrender.com/swagger-ui.html
+**[🔗 Деплой на Render](https://todo-spring-boot-m3g2.onrender.com/swagger-ui.html)**
 *Бесплатный тариф Render «засыпает» после 15 минут бездействия. Первый запрос может занять 20–30 секунд.*
+
+**[🔗 Живое демо фронтенда на Vercel](https://todo-frontend-nine-beta.vercel.app)**
+**[🔗 Фронтенд (React + TypeScript + Vite + TailwindCSS)](https://github.com/StefaHuge/todo-frontend)**
+
 
 ## 🛠 Технологический стек
 
@@ -44,7 +46,9 @@ https://todo-spring-boot-m3g2.onrender.com/swagger-ui.html
    docker compose up --build
    
 5. Откройте Swagger UI:
+```text 
    http://localhost:8081/swagger-ui.html
+```
 
 ### Вариант 2: Локально с PostgreSQL
 
@@ -80,16 +84,17 @@ Web Service: https://todo-spring-boot-m3g2.onrender.com
 Конфигурация для облака — в application-render.yml (без секретов, только переменные окружения).
 
 ## 📁 Структура проекта
-
+```text
 src/main/java/com/example/todospring/
-- config/# SecurityConfig, SecurityBeans, DataInitializer
-- controller/# AuthController, TaskController
-- dto/# TaskRequestDTO, TaskResponseDTO, AuthRequest
-- exception/# GlobalExceptionHandler, ErrorResponse
-- model/# Task, User
-- repository/# TaskRepository, UserRepository
-- security/# JwtService, JwtAuthFilter
-- service/# TaskService, UserService
+├── config/# SecurityConfig, SecurityBeans, DataInitializer
+├── controller/# AuthController, TaskController
+├── dto/# TaskRequestDTO, TaskResponseDTO, AuthRequest
+├── exception/# GlobalExceptionHandler, ErrorResponse
+├── model/# Task, User
+├── repository/# TaskRepository, UserRepository
+├── security/# JwtService, JwtAuthFilter
+└── service/# TaskService, UserService
+```
 
 ## 📄 Лицензия
 
